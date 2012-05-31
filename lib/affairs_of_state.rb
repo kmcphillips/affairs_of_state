@@ -8,12 +8,18 @@ module AffairsOfState
 
   module ClassMethods
     def affairs_of_state(*args)
-      @_status_options = ({:column => :status, :allow_blank => false}).merge(args.extract_options!)
+      @_status_options = ({:column => :status, :allow_blank => false, :scopes => true}).merge(args.extract_options!)
       @_statuses = args.flatten.map(&:to_s)
 
       const_set("STATUSES", @_statuses)
 
       validates(@_status_options[:column], :inclusion => {:in => @_statuses, :allow_blank => @_status_options[:allow_blank]})
+
+      if @_status_options[:scopes]
+        @_statuses.each do |status|
+          scope status.to_sym, where(@_status_options[:column] => status.to_s)
+        end
+      end
 
       include InstanceMethods
       extend SingletonMethods

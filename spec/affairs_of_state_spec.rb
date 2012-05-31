@@ -44,6 +44,23 @@ describe AffairsOfState do
     it "should provide a method to pass to dropdowns" do
       Pie.statuses_for_select.should == [["Active", "active"], ["Inactive", "inactive"], ["Cancelled", "cancelled"]]
     end
+
+    describe "scopes" do
+      it "should have a finder to match the status name" do
+        Pie.create! :status => "active"
+        Pie.create! :status => "inactive"
+        Pie.create! :status => "active"
+        Pie.create! :status => "cancelled"
+
+        Pie.active.size.should == 2
+        Pie.inactive.size.should == 1
+        Pie.cancelled.size.should == 1
+      end
+    end
+
+    after(:each) do
+      Pie.destroy_all
+    end
   end
 
   describe "with a non-standard column name" do
@@ -81,6 +98,18 @@ describe AffairsOfState do
 
     it "should work too if that's what floats your boat" do
       Pie4::STATUSES.should == ["on", "off"]
+    end
+  end
+
+  describe "without the scopes" do
+    class Pie5 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :active, :inactive, :scopes => false
+    end    
+
+    it "should work too if that's what floats your boat" do
+      Pie5.should_not respond_to(:active)
     end
   end
 

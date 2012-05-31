@@ -51,6 +51,12 @@ You can also access all your statuses on the model like so:
 
     Widget::STATUES  # -> ["active", "cancelled"]
 
+It also provides scopes automagically:
+
+    Widget.active
+    
+    Widget.cancelled
+
 
 ## "But I want callbacks and validations and other things."
 
