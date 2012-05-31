@@ -16,6 +16,11 @@ describe AffairsOfState do
       p.should_not be_valid
     end
 
+    it "should validate that we're not setting it to something stupid" do
+      p = Pie.new :status => "delicious_pie"
+      p.should_not be_valid
+    end
+
     describe "boolean methods" do
       it "should find the set status" do
         p = Pie.new :status => "active"
@@ -64,6 +69,18 @@ describe AffairsOfState do
     it "should validate the column is set" do
       p = Pie3.new :status => nil
       p.should be_valid
+    end
+  end
+
+  describe "with an array rather than *args" do
+    class Pie4 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state [:on, :off]
+    end    
+
+    it "should work too if that's what floats your boat" do
+      Pie4::STATUSES.should == ["on", "off"]
     end
   end
 

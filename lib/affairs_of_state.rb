@@ -9,7 +9,7 @@ module AffairsOfState
   module ClassMethods
     def affairs_of_state(*args)
       @_status_options = ({:column => :status, :allow_blank => false}).merge(args.extract_options!)
-      @_statuses = args.map(&:to_s)
+      @_statuses = args.flatten.map(&:to_s)
 
       const_set("STATUSES", @_statuses)
 
