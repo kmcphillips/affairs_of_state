@@ -13,7 +13,7 @@ module AffairsOfState
 
       const_set("STATUSES", @_statuses)
 
-      validates(@_status_options[:column], :presence => true) unless @_status_options[:allow_blank]
+      validates(@_status_options[:column], :inclusion => {:in => @_statuses, :allow_blank => @_status_options[:allow_blank]})
 
       include InstanceMethods
       extend SingletonMethods
