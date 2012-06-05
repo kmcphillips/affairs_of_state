@@ -38,7 +38,8 @@ module AffairsOfState
 
       elsif self.class::STATUSES.map{|s| "#{s}!".to_sym }.include?(method)
         self.class.send(:define_method, method) do
-          self.update_attribute(self.class.instance_variable_get('@_status_options')[:column], method.to_s.gsub(/\!$/, ""))
+          self.send("#{self.class.instance_variable_get('@_status_options')[:column]}=", method.to_s.gsub(/\!$/, ""))
+          self.save
         end
 
         send method
