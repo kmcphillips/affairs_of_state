@@ -38,6 +38,12 @@ Or give it a long list of statuses:
 
     affairs_of_state :ordered, :cancelled, :shipped, :lost, :in_transit
 
+You can also pass a proc or a method name symbol to the :if option to bypass validation:
+
+    affairs_of_state :active, :inactive, :if => lambda{|object| only_validate_if_this_is_true(object) }
+    # or
+    affairs_of_state :active, :inactive, :if => :only_validate_if_this_method_returns_true
+
 
 ## Methods
 
@@ -54,7 +60,7 @@ You can also access all your statuses on the model like so:
 It also provides scopes automagically:
 
     Widget.active
-    
+
     Widget.cancelled
 
 

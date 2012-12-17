@@ -94,7 +94,7 @@ describe AffairsOfState do
       self.table_name = "pies"
 
       affairs_of_state [:on, :off]
-    end    
+    end
 
     it "should work too if that's what floats your boat" do
       Pie4::STATUSES.should == ["on", "off"]
@@ -106,10 +106,62 @@ describe AffairsOfState do
       self.table_name = "pies"
 
       affairs_of_state :active, :inactive, :scopes => false
-    end    
+    end
 
     it "should work too if that's what floats your boat" do
       Pie5.should_not respond_to(:active)
+    end
+  end
+
+  describe "with a conditional proc" do
+    class Pie6 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :active, :inactive, :if => lambda{|p| p.is_going_to_validate }
+
+      attr_accessor :is_going_to_validate
+    end
+
+    it "should enforce the validation if the :if param is true" do
+      p = Pie6.new
+      p.is_going_to_validate = true
+      p.status = "pie"
+      p.should_not be_valid
+    end
+
+    it "should not enforce the validation if the :if param evaluates to false" do
+      p = Pie6.new
+      p.is_going_to_validate = false
+      p.status = "pie"
+      p.should be_valid
+    end
+  end
+
+  describe "with a conditional method name" do
+    class Pie7 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :active, :inactive, :if => :validation_method?
+
+      attr_accessor :is_going_to_validate
+
+      def validation_method?
+        self.is_going_to_validate
+      end
+    end
+
+    it "should enforce the validation if the :if param is true" do
+      p = Pie7.new
+      p.is_going_to_validate = true
+      p.status = "pie"
+      p.should_not be_valid
+    end
+
+    it "should not enforce the validation if the :if param evaluates to false" do
+      p = Pie7.new
+      p.is_going_to_validate = false
+      p.status = "pie"
+      p.should be_valid
     end
   end
 

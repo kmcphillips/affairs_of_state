@@ -8,12 +8,12 @@ module AffairsOfState
 
   module ClassMethods
     def affairs_of_state(*args)
-      @_status_options = ({:column => :status, :allow_blank => false, :scopes => true}).merge(args.extract_options!)
+      @_status_options = ({:column => :status, :allow_blank => false, :scopes => true, :if => nil}).merge(args.extract_options!)
       @_statuses = args.flatten.map(&:to_s)
 
       const_set("STATUSES", @_statuses)
 
-      validates(@_status_options[:column], :inclusion => {:in => @_statuses, :allow_blank => @_status_options[:allow_blank]})
+      validates(@_status_options[:column], :inclusion => {:in => @_statuses, :allow_blank => @_status_options[:allow_blank]}, :if => @_status_options[:if])
 
       if @_status_options[:scopes]
         @_statuses.each do |status|
