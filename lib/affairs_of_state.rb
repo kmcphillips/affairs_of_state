@@ -17,7 +17,7 @@ module AffairsOfState
 
       if @_status_options[:scopes]
         @_statuses.each do |status|
-          scope status.to_sym, where(@_status_options[:column] => status.to_s)
+          scope status.to_sym, -> { where(@_status_options[:column] => status.to_s) }
         end
       end
 
