@@ -6,65 +6,93 @@ You have an Active Record model. It nees to have multiple states, but not comple
 
 Add this line to your application's Gemfile:
 
-    gem 'affairs_of_state'
+```ruby
+gem 'affairs_of_state'
+```
 
 And then execute:
 
-    $ bundle
+```ruby
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install affairs_of_state
+```ruby
+$ gem install affairs_of_state
+```
 
 ## Usage
 
-The gem assumes you have a string column named "status" on your model:
+The gem assumes you have a string column named `status` on your model:
 
-    add_column :model_name, :status, :default => "active"
+```ruby
+add_column :model_name, :status, :default => "active"
+```
 
 Then you just list your states in the model:
 
-    affairs_of_state :active, :inactive
+```ruby
+affairs_of_state :active, :inactive
+```
 
-If you'd like to use another column, lets say "state", pass it in as a configuration option:
+If you'd like to use another column, lets say `state`, pass it in as a configuration option:
 
-    affairs_of_state :active, :inactive, :column => :state
+```ruby
+affairs_of_state :active, :inactive, :column => :state
+```
 
 You can also turn off validation:
 
-    affairs_of_state :active, :inactive, :allow_blank => true
+```ruby
+affairs_of_state :active, :inactive, :allow_blank => true
+```
 
 Or give it a long list of statuses:
 
-    affairs_of_state :ordered, :cancelled, :shipped, :lost, :in_transit
+```ruby
+affairs_of_state :ordered, :cancelled, :shipped, :lost, :in_transit
+```
 
 You can also pass a proc or a method name symbol to the :if option to bypass validation:
 
-    affairs_of_state :active, :inactive, :if => lambda{|object| only_validate_if_this_is_true(object) }
-    # or
-    affairs_of_state :active, :inactive, :if => :only_validate_if_this_method_returns_true
+```ruby
+affairs_of_state :active, :inactive, :if => lambda{|object| only_validate_if_this_is_true(object) }
+# or
+affairs_of_state :active, :inactive, :if => :only_validate_if_this_method_returns_true
+```
 
 
 ## Methods
 
 The gem provides methods for checking and setting your status. The question mark method returns a boolean, and the bang method changes to that status. Lets assume you have "active" and "cancelled" as defined status:
 
-    widget = Widget.first
-
-    widget.cancelled! if widget.active?
+```ruby
+widget = Widget.first
+widget.cancelled! if widget.active?
+```
 
 You can also access all your statuses on the model like so:
 
-    Widget::STATUES  # -> ["active", "cancelled"]
+```ruby
+Widget::STATUES  # -> ["active", "cancelled"]
+```
 
 It also provides scopes automagically:
 
-    Widget.active
+```ruby
+Widget.active
+Widget.cancelled
+```
 
-    Widget.cancelled
+For select inputs in forms there is a convenience method that returns all states in the format expected by `options_for_select`
+
+```ruby
+<%= f.select :status, options_for_select(Widget.statuses_for_select) %>
+```
 
 
-## "But I want callbacks and validations and other things."
+## "But I want callbacks and validations etc."
 
 Then this gem isn't for you. Consider:
 
@@ -77,10 +105,13 @@ https://github.com/pluginaweek/state_machine
 
 Just run rspec:
 
-    rspec
+```
+rspec
+```
 
 
 ## The usual
 
 Author: Kevin McPhillips - github@kevinmcphillips.ca
 
+License: [MIT](http://opensource.org/licenses/MIT)
