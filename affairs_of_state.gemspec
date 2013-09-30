@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Add a simple state to a gem, without all the hassle of a complex state machine.}
   gem.summary       = %q{You have an Active Record model. It nees to have multiple states, but not complex rules. This gem gives you validation, easy check and change methods, and a single configuration line.}
   gem.homepage      = "http://github.com/kmcphillips/affairs_of_state"
+  gem.license       = 'MIT'
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
