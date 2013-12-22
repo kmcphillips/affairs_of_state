@@ -1,5 +1,7 @@
 # Affairs of State
 
+[![Build Status](https://travis-ci.org/kmcphillips/affairs_of_state.png?branch=master)](https://travis-ci.org/kmcphillips/affairs_of_state)
+
 You have an Active Record model. It nees to have multiple states, but not complex rules. This gem gives you validation, easy check and change methods, and a single configuration line.
 
 ## Installation
