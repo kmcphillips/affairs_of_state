@@ -77,7 +77,7 @@ widget.cancelled! if widget.active?
 You can also access all your statuses on the model like so:
 
 ```ruby
-Widget::STATUES  # -> ["active", "cancelled"]
+Widget::STATUSES  # -> ["active", "cancelled"]
 ```
 
 It also provides scopes automagically:
