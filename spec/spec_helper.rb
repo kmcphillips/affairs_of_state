@@ -1,15 +1,14 @@
-require 'active_support'
 require 'active_record'
 require 'affairs_of_state'
 require 'pry'
 
 RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
 end
 
 
 ## Create an AR model to test with
+I18n.enforce_available_locales = false
 
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
