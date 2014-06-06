@@ -17,6 +17,7 @@ module AffairsOfState
 
       if @_status_options[:scopes]
         @_statuses.each do |status|
+          raise "Affairs of State: '#{ status }' is not a valid status" unless valid_status?(status)
           self.scope status.to_sym, -> { where(@_status_options[:column] => status.to_s) }
         end
       end
@@ -24,6 +25,12 @@ module AffairsOfState
       include InstanceMethods
       extend SingletonMethods
       true
+    end
+
+    private
+
+    def valid_status?(status)
+      ![:new].include?(status.to_sym)
     end
   end
 
