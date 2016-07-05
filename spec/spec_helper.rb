@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_support/all'
 require 'affairs_of_state'
 require 'pry'
 

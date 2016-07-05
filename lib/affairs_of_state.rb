@@ -1,12 +1,9 @@
 require "affairs_of_state/version"
 
 module AffairsOfState
+  extend ActiveSupport::Concern
 
-  def self.included(base)
-    base.extend ClassMethods
-  end
-
-  module ClassMethods
+  class_methods do
     def affairs_of_state(*args)
       @_status_options = { column: :status, allow_blank: false, scopes: true, if: nil }.merge(args.extract_options!)
       @_statuses = args.flatten.map(&:to_s)
@@ -17,7 +14,7 @@ module AffairsOfState
 
       if @_status_options[:scopes]
         @_statuses.each do |status|
-          raise "Affairs of State: '#{  status }' is not a valid status" unless valid_status?(status)
+          raise ArgumentError.new("Affairs of State: '#{ status }' is not a valid status") unless valid_status?(status)
           self.scope status.to_sym, -> { where(@_status_options[:column] => status.to_s) }
         end
       end
@@ -42,7 +39,7 @@ module AffairsOfState
           self.status == method.to_s.gsub(/\?$/, "")
         end
 
-        send method
+        send(method)
 
       elsif self.class::STATUSES.map{ |s| "#{ s }!".to_sym }.include?(method)
         self.class.send(:define_method, method) do
@@ -50,7 +47,7 @@ module AffairsOfState
           self.save
         end
 
-        send method
+        send(method)
       else
         super
       end
