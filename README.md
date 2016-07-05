@@ -53,7 +53,7 @@ affairs_of_state :ordered, :cancelled, :shipped, :lost, :in_transit
 You can also pass a proc or a method name symbol to the :if option to bypass validation:
 
 ```ruby
-affairs_of_state :active, :inactive, if: >(object) { only_validate_if_this_is_true(object) }
+affairs_of_state :active, :inactive, if: ->(object) { only_validate_if_this_is_true(object) }
 ```
 or
 ```ruby

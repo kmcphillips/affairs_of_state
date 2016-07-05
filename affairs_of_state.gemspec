@@ -16,7 +16,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = AffairsOfState::VERSION
 
-  gem.add_dependency "activerecord", ">= 3.2"
+  gem.add_dependency "activerecord", ">= 4.0"
+  gem.add_dependency "activesupport", ">= 4.0"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "sqlite3"
