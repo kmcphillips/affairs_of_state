@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/kmcphillips/affairs_of_state.png?branch=master)](https://travis-ci.org/kmcphillips/affairs_of_state)
 
-You have an Active Record model. It nees to have multiple states, but not complex rules. This gem gives you validation, easy check and change methods, and a single configuration line.
+You have an Active Record model. It nees to have multiple states, boolean convenience methods, simple validation, but not complex rules. This gem gives you this in a single line class method.
 
 ## Installation
 
@@ -12,13 +12,7 @@ Add this line to your application's Gemfile:
 gem 'affairs_of_state'
 ```
 
-And then execute:
-
-```ruby
-$ bundle
-```
-
-Or install it yourself as:
+Or install it with:
 
 ```ruby
 $ gem install affairs_of_state
@@ -29,7 +23,7 @@ $ gem install affairs_of_state
 The gem assumes you have a string column named `status` on your model:
 
 ```ruby
-add_column :model_name, :status, :default => "active"
+add_column :model_name, :status, default: "active"
 ```
 
 Then you just list your states in the model:
@@ -41,13 +35,13 @@ affairs_of_state :active, :inactive
 If you'd like to use another column, lets say `state`, pass it in as a configuration option:
 
 ```ruby
-affairs_of_state :active, :inactive, :column => :state
+affairs_of_state :active, :inactive, column: :state
 ```
 
 You can also turn off validation:
 
 ```ruby
-affairs_of_state :active, :inactive, :allow_blank => true
+affairs_of_state :active, :inactive, allow_blank: true
 ```
 
 Or give it a long list of statuses:
@@ -59,9 +53,11 @@ affairs_of_state :ordered, :cancelled, :shipped, :lost, :in_transit
 You can also pass a proc or a method name symbol to the :if option to bypass validation:
 
 ```ruby
-affairs_of_state :active, :inactive, :if => lambda{|object| only_validate_if_this_is_true(object) }
-# or
-affairs_of_state :active, :inactive, :if => :only_validate_if_this_method_returns_true
+affairs_of_state :active, :inactive, if: >(object) { only_validate_if_this_is_true(object) }
+```
+or
+```ruby
+affairs_of_state :active, :inactive, if: :only_validate_if_this_method_returns_true
 ```
 
 
@@ -114,6 +110,6 @@ rspec
 
 ## The usual
 
-Author: Kevin McPhillips - github@kevinmcphillips.ca
+By Kevin McPhillips (github@kevinmcphillips.ca)
 
-License: [MIT](http://opensource.org/licenses/MIT)
+[MIT License](http://opensource.org/licenses/MIT)
