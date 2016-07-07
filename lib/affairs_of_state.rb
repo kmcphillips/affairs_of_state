@@ -5,6 +5,8 @@ module AffairsOfState
 
   class_methods do
     def affairs_of_state(*statuses, column: :status, allow_blank: false, scopes: true, if: nil)
+      raise ArgumentError.new("Affairs of State: cannot be invoked multiple times on the same model") if @_statuses
+
       @_status_options = { column: column, allow_blank: allow_blank, scopes: scopes, if: binding.local_variable_get(:if) }
       @_statuses = statuses.flatten.map(&:to_s)
 

@@ -167,4 +167,15 @@ describe AffairsOfState do
     end
   end
 
+  describe "multiple invocations" do
+    it "raises an error" do
+      expect(->{
+        class Pie9 < ActiveRecord::Base
+          affairs_of_state :not_important
+          affairs_of_state :something
+        end
+      }).to raise_error(ArgumentError, "Affairs of State: cannot be invoked multiple times on the same model")
+    end
+  end
+
 end

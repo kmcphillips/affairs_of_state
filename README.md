@@ -60,6 +60,8 @@ or
 affairs_of_state :active, :inactive, if: :only_validate_if_this_method_returns_true
 ```
 
+Currently it is limited only be called once per model.
+
 
 ## Methods
 
