@@ -4,9 +4,9 @@ module AffairsOfState
   extend ActiveSupport::Concern
 
   class_methods do
-    def affairs_of_state(*args)
-      @_status_options = { column: :status, allow_blank: false, scopes: true, if: nil }.merge(args.extract_options!)
-      @_statuses = args.flatten.map(&:to_s)
+    def affairs_of_state(*statuses, column: :status, allow_blank: false, scopes: true, if: nil)
+      @_status_options = { column: column, allow_blank: allow_blank, scopes: scopes, if: binding.local_variable_get(:if) }
+      @_statuses = statuses.flatten.map(&:to_s)
 
       const_set("STATUSES", @_statuses)
 
