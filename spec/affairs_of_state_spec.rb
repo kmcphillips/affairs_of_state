@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe AffairsOfState do
-
   describe "with a simple configuration" do
     class Pie < ActiveRecord::Base
       affairs_of_state :active, :inactive, :cancelled
@@ -177,5 +176,4 @@ describe AffairsOfState do
       }).to raise_error(ArgumentError, "Affairs of State: cannot be invoked multiple times on the same model")
     end
   end
-
 end

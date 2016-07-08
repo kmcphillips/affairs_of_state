@@ -1,27 +1,30 @@
-require "affairs_of_state/version"
-
 require "active_support"
 require "active_support/concern"
 require "active_record"
+
+require "affairs_of_state/version"
+require "affairs_of_state/config"
 
 module AffairsOfState
   extend ActiveSupport::Concern
 
   class_methods do
     def affairs_of_state(*statuses, column: :status, allow_blank: false, scopes: true, if: nil)
-      raise ArgumentError.new("Affairs of State: cannot be invoked multiple times on the same model") if @_statuses
+      raise ArgumentError.new("Affairs of State: cannot be invoked multiple times on the same model") if @affairs_of_state_config
 
-      @_status_options = { column: column, allow_blank: allow_blank, scopes: scopes, if: binding.local_variable_get(:if) }
-      @_statuses = statuses.flatten.map(&:to_s)
+      affairs_of_state_config.statuses = statuses
+      affairs_of_state_config.column = column
+      affairs_of_state_config.allow_blank = allow_blank
+      affairs_of_state_config.scopes = scopes
+      affairs_of_state_config.if = binding.local_variable_get(:if)
 
-      const_set("STATUSES", @_statuses)
+      const_set(:STATUSES, affairs_of_state_config.statuses)
 
-      validates(@_status_options[:column], inclusion: { in: @_statuses, allow_blank: @_status_options[:allow_blank] }, if: @_status_options[:if])
+      validates(affairs_of_state_config.column, inclusion: { in: affairs_of_state_config.statuses, allow_blank: affairs_of_state_config.allow_blank }, if: affairs_of_state_config.if)
 
-      if @_status_options[:scopes]
-        @_statuses.each do |status|
-          raise ArgumentError.new("Affairs of State: '#{ status }' is not a valid status") unless valid_status?(status)
-          self.scope status.to_sym, -> { where(@_status_options[:column] => status.to_s) }
+      if affairs_of_state_config.scopes
+        affairs_of_state_config.statuses.each do |status|
+          self.scope(status.to_sym, -> { where(affairs_of_state_config.column => status) })
         end
       end
 
@@ -31,10 +34,8 @@ module AffairsOfState
       true
     end
 
-    private
-
-    def valid_status?(status)
-      ![:new].include?(status.to_sym)
+    def affairs_of_state_config
+      @affairs_of_state_config ||= AffairsOfState::Config.new
     end
   end
 
@@ -49,7 +50,7 @@ module AffairsOfState
 
       elsif self.class::STATUSES.map{ |s| "#{ s }!".to_sym }.include?(method)
         self.class.send(:define_method, method) do
-          self.send("#{ self.class.instance_variable_get('@_status_options')[:column] }=", method.to_s.gsub(/\!$/, ""))
+          self.send("#{ self.class.affairs_of_state_config.column }=", method.to_s.gsub(/\!$/, ""))
           self.save
         end
 
@@ -62,12 +63,10 @@ module AffairsOfState
 
   module SingletonMethods
     def statuses_for_select
-      @_statuses.map{ |s| [s.humanize, s] }
+      affairs_of_state_config.statuses.map{ |s| [s.humanize, s] }
     end
   end
-
 end
-
 
 ActiveSupport.on_load(:active_record) do
   ::ActiveRecord::Base.send :include, AffairsOfState
