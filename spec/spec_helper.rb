@@ -1,7 +1,6 @@
-require 'active_record'
-require 'active_support/all'
-require 'affairs_of_state'
-require 'pry'
+require "affairs_of_state"
+
+require "pry"
 
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
