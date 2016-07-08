@@ -1,5 +1,9 @@
 require "affairs_of_state/version"
 
+require "active_support"
+require "active_support/concern"
+require "active_record"
+
 module AffairsOfState
   extend ActiveSupport::Concern
 
@@ -64,4 +68,7 @@ module AffairsOfState
 
 end
 
-ActiveRecord::Base.send :include, AffairsOfState
+
+ActiveSupport.on_load(:active_record) do
+  ::ActiveRecord::Base.send :include, AffairsOfState
+end
