@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "activesupport", ">= 4.0"
 
   gem.add_development_dependency "rspec"
-  gem.add_development_dependency "sqlite3", "~> 1.3.6"
+  gem.add_development_dependency "sqlite3", "~> 1.4.0"
   gem.add_development_dependency "pry"
   gem.add_development_dependency "rake"
 
