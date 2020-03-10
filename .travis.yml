@@ -2,20 +2,18 @@ language: ruby
 script: bundle exec rspec
 sudo: false
 rvm:
-  - "2.1.0"
-  - "2.2.2"
-  - "2.3.1"
+  - "2.4.9"
+  - "2.5.7"
+  - "2.6.5"
+  - "2.7.0"
 
 gemfile:
-- Gemfile
-- gemfiles/activerecord40.gemfile
-- gemfiles/activerecord41.gemfile
-- gemfiles/activerecord42.gemfile
-- gemfiles/activerecord50.gemfile
+  - Gemfile
+  - gemfiles/activesupport-5.0.gemfile
+  - gemfiles/activesupport-5.1.gemfile
+  - gemfiles/activesupport-6.0.gemfile
 
 matrix:
   exclude:
-    - rvm: "2.1.0"
-      gemfile: Gemfile
-    - rvm: "2.1.0"
-      gemfile: gemfiles/activerecord50.gemfile
+    - gemfile: gemfiles/activesupport-6.0.gemfile
+      rvm: 2.4.9

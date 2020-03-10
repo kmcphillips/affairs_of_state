@@ -1,6 +1,7 @@
 require "affairs_of_state"
 
 require "pry"
+require "sqlite3"
 
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
