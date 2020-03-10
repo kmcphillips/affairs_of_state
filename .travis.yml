@@ -9,11 +9,11 @@ rvm:
 
 gemfile:
   - Gemfile
-  - gemfiles/activesupport-5.0.gemfile
-  - gemfiles/activesupport-5.1.gemfile
-  - gemfiles/activesupport-6.0.gemfile
+  - gemfiles/activerecord-5.0.gemfile
+  - gemfiles/activerecord-5.1.gemfile
+  - gemfiles/activerecord-6.0.gemfile
 
 matrix:
   exclude:
-    - gemfile: gemfiles/activesupport-6.0.gemfile
+    - gemfile: gemfiles/activerecord-6.0.gemfile
       rvm: 2.4.9
