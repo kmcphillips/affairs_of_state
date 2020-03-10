@@ -70,6 +70,16 @@ describe AffairsOfState do
     it "should validate the column is set" do
       expect(Pie2.new(status: nil, super_status: "active")).to be_valid
     end
+
+    it "should know the accessors" do
+      expect(Pie2.new(status: nil, super_status: "inactive").inactive?).to be(true)
+    end
+
+    it "should know the setters" do
+      instance = Pie2.create!(status: nil, super_status: "inactive")
+      expect(instance.active!).to be(true)
+      expect(instance.super_status).to eq("active")
+    end
   end
 
   describe "without validations" do

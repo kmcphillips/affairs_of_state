@@ -20,6 +20,17 @@ module AffairsOfState
 
       const_set(:STATUSES, affairs_of_state_config.statuses)
 
+      affairs_of_state_config.statuses.each do |status|
+        define_method("#{ status }?") do
+          self.send(self.class.affairs_of_state_config.column) == status
+        end
+
+        define_method("#{ status }!") do
+          self.send("#{ self.class.affairs_of_state_config.column }=", status)
+          self.save
+        end
+      end
+
       validates(affairs_of_state_config.column, inclusion: { in: affairs_of_state_config.statuses, allow_blank: affairs_of_state_config.allow_blank }, if: affairs_of_state_config.if)
 
       if affairs_of_state_config.scopes
@@ -40,25 +51,6 @@ module AffairsOfState
   end
 
   module InstanceMethods
-    def method_missing(method, *args)
-      if self.class::STATUSES.map{ |s| "#{ s }?".to_sym }.include?(method)
-        self.class.send(:define_method, method) do
-          self.status == method.to_s.gsub(/\?$/, "")
-        end
-
-        send(method)
-
-      elsif self.class::STATUSES.map{ |s| "#{ s }!".to_sym }.include?(method)
-        self.class.send(:define_method, method) do
-          self.send("#{ self.class.affairs_of_state_config.column }=", method.to_s.gsub(/\!$/, ""))
-          self.save
-        end
-
-        send(method)
-      else
-        super
-      end
-    end
   end
 
   module SingletonMethods
