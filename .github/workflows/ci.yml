@@ -8,7 +8,6 @@ jobs:
       fail-fast: false
       matrix:
         gemfile:
-          - "activerecord-5.2.gemfile"
           - "activerecord-6.0.gemfile"
           - "activerecord-6.1.gemfile"
           - "activerecord-latest.gemfile"
