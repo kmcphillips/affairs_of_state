@@ -1,6 +1,6 @@
 # Affairs of State
 
-[![Build Status](https://travis-ci.org/kmcphillips/affairs_of_state.png?branch=master)](https://travis-ci.org/kmcphillips/affairs_of_state)
+![Build Status](https://github.com/kmcphillips/affairs_of_state/actions/workflows/ci.yml/badge.svg)
 
 You have an Active Record model. It nees to have multiple states, boolean convenience methods, simple validation, but not complex rules. This gem gives you this in a single line class method.
 
