@@ -1,0 +1,26 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        gemfile:
+          - "activerecord-5.2.gemfile"
+          - "activerecord-6.0.gemfile"
+          - "activerecord-6.1.gemfile"
+          - "activerecord-latest.gemfile"
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Run tests
+        run: |
+          bundle exec rspec --format doc
