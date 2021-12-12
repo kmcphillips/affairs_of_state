@@ -10,34 +10,38 @@ module AffairsOfState
 
   class_methods do
     def affairs_of_state(*statuses, column: :status, allow_blank: false, scopes: true, if: nil)
-      raise ArgumentError.new("Affairs of State: cannot be invoked multiple times on the same model") if @affairs_of_state_config
+      raise ArgumentError.new("Affairs of State: cannot be invoked multiple times on the same model") if affairs_of_state_configs.any?
 
-      affairs_of_state_config.statuses = statuses
-      affairs_of_state_config.column = column
-      affairs_of_state_config.allow_blank = allow_blank
-      affairs_of_state_config.scopes = scopes
-      affairs_of_state_config.if = binding.local_variable_get(:if)
+      config = AffairsOfState::Config.new(
+        statuses: statuses,
+        column: column,
+        allow_blank: !!allow_blank,
+        scopes: scopes,
+        if: binding.local_variable_get(:if)
+      )
 
-      const_set(:STATUSES, affairs_of_state_config.statuses)
+      const_set(:STATUSES, config.statuses)
 
-      affairs_of_state_config.statuses.each do |status|
+      config.statuses.each do |status|
         define_method("#{ status }?") do
-          self.send(self.class.affairs_of_state_config.column) == status
+          self.send(config.column) == status
         end
 
         define_method("#{ status }!") do
-          self.send("#{ self.class.affairs_of_state_config.column }=", status)
+          self.send("#{ config.column }=", status)
           self.save
         end
       end
 
-      validates(affairs_of_state_config.column, inclusion: { in: affairs_of_state_config.statuses, allow_blank: affairs_of_state_config.allow_blank }, if: affairs_of_state_config.if)
+      validates(config.column, inclusion: { in: config.statuses, allow_blank: config.allow_blank }, if: config.if)
 
-      if affairs_of_state_config.scopes
-        affairs_of_state_config.statuses.each do |status|
-          self.scope(status.to_sym, -> { where(affairs_of_state_config.column => status) })
+      if config.scopes
+        config.statuses.each do |status|
+          self.scope(status.to_sym, -> { where(config.column => status) })
         end
       end
+
+      affairs_of_state_configs[config.column] = config
 
       include InstanceMethods
       extend SingletonMethods
@@ -45,8 +49,8 @@ module AffairsOfState
       true
     end
 
-    def affairs_of_state_config
-      @affairs_of_state_config ||= AffairsOfState::Config.new
+    def affairs_of_state_configs
+      @affairs_of_state_configs ||= {}
     end
   end
 
@@ -55,7 +59,7 @@ module AffairsOfState
 
   module SingletonMethods
     def statuses_for_select
-      affairs_of_state_config.statuses.map{ |s| [s.humanize, s] }
+      affairs_of_state_configs.values.first.statuses.map{ |s| [s.humanize, s] }
     end
   end
 end

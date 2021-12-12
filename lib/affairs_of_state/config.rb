@@ -1,16 +1,18 @@
 module AffairsOfState
   class Config
-    attr_accessor :column, :allow_blank, :scopes, :if
-    attr_reader :statuses
+    attr_reader :statuses, :column, :allow_blank, :scopes, :if
 
-    def statuses=(val)
-      @statuses = val.flatten.map(&:to_s)
+    DISALLOWED_STATUSES = [ "new" ].freeze
 
+    def initialize(statuses:, column:, allow_blank:, scopes:, if:)
+      @column = column
+      @allow_blank = !!allow_blank
+      @scopes = !!scopes
+      @if = binding.local_variable_get(:if)
+      @statuses = statuses.flatten.map(&:to_s)
       @statuses.each do |status|
-        raise ArgumentError.new("Affairs of State: '#{ status }' is not a valid status") if ["new"].include?(status)
+        raise ArgumentError.new("Affairs of State: '#{ status }' is not a valid status") if DISALLOWED_STATUSES.include?(status)
       end
-
-      @statuses
     end
   end
 end

@@ -1,47 +1,50 @@
 require 'spec_helper'
 
 describe AffairsOfState::Config do
-  subject{ AffairsOfState::Config.new }
+  let(:config) do
+    AffairsOfState::Config.new(
+      statuses: statuses,
+      column: column,
+      allow_blank: allow_blank,
+      scopes: scopes,
+      if: if_condition
+    )
+  end
+  let(:column) { "state" }
+  let(:statuses) { [ :created, [ :destroyed ] ] }
+  let(:allow_blank) { "sure" }
+  let(:scopes) { nil }
+  let(:if_condition) { "false" }
+
+  subject { config }
 
   describe "accessors" do
-    let(:expected){ double }
-
     it "has :column" do
-      subject.column = expected
-      expect(subject.column).to eq(expected)
+      expect(subject.column).to eq(column)
     end
 
     it "has :allow_blank" do
-      subject.allow_blank = expected
-      expect(subject.allow_blank).to eq(expected)
+      expect(subject.allow_blank).to be(true)
     end
 
     it "has :scopes" do
-      subject.scopes = expected
-      expect(subject.scopes).to eq(expected)
+      expect(subject.scopes).to be(false)
     end
 
     it "has :if" do
-      subject.if = expected
-      expect(subject.if).to eq(expected)
+      expect(subject.if).to eq(if_condition)
+    end
+
+    it "has :statuses and converts to strings and flattens" do
+      expect(subject.statuses).to eq(["created", "destroyed"])
     end
   end
 
-  describe "#statuses=" do
-    it "converts to string" do
-      subject.statuses = [:a, :b]
-      expect(subject.statuses).to eq(["a", "b"])
-    end
-
-    it "flattens" do
-      subject.statuses = ["a", [:b]]
-      expect(subject.statuses).to eq(["a", "b"])
-    end
+  context "with invalid status" do
+    let(:statuses) { [ "new" ] }
 
     it "makes sure no invalid statuses are allowed" do
-      expect(->{
-        subject.statuses = [:new]
-      }).to raise_error(ArgumentError, "Affairs of State: 'new' is not a valid status")
+      expect { subject }.to raise_error(ArgumentError, "Affairs of State: 'new' is not a valid status")
     end
   end
 end
