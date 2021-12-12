@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "affairs_of_state"
 
 require "pry"
@@ -7,7 +8,7 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 end
 
-## Create an AR model to test with
+# Create an AR model to test with
 I18n.enforce_available_locales = false
 
 ActiveRecord::Base.establish_connection(

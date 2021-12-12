@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AffairsOfState
   class Config
     attr_reader :statuses, :column, :allow_blank, :scopes, :if
