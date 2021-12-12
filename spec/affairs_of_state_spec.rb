@@ -7,10 +7,6 @@ describe AffairsOfState do
       affairs_of_state :active, :inactive, :cancelled
     end
 
-    it "should set the constant" do
-      expect(Pie::STATUSES).to eq(["active", "inactive", "cancelled"])
-    end
-
     it "should validate the column is set" do
       expect(Pie.new(status: nil)).to_not be_valid
     end
@@ -37,6 +33,14 @@ describe AffairsOfState do
         expect(p.inactive!).to be_truthy
         expect(p.status).to eq("inactive")
       end
+    end
+
+    it "should have the statuses method with the nil default" do
+      expect(Pie.statuses).to eq(["active", "inactive", "cancelled"])
+    end
+
+    it "should have the statuses method" do
+      expect(Pie.statuses(:status)).to eq(["active", "inactive", "cancelled"])
     end
 
     it "should provide a method to pass to dropdowns" do
@@ -103,7 +107,7 @@ describe AffairsOfState do
     end
 
     it "should work too if that's what floats your boat" do
-      expect(Pie4::STATUSES).to eq(["on", "off"])
+      expect(Pie4.statuses).to eq(["on", "off"])
     end
   end
 
@@ -178,13 +182,63 @@ describe AffairsOfState do
   end
 
   describe "multiple invocations" do
-    it "raises an error" do
-      expect(->{
-        class Pie9 < ActiveRecord::Base
-          affairs_of_state :not_important
-          affairs_of_state :something
+    class Pie9 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :active, :inactive
+      affairs_of_state :moderated, :unmoderated, column: :super_status
+    end
+
+    it "declares two status columns" do
+      p = Pie9.new
+      p.inactive!
+      p.unmoderated!
+      expect(p).to be_inactive
+      expect(p).to be_unmoderated
+    end
+
+    it "raises if called twice on the same column" do
+      expect {
+        class Pie < ActiveRecord::Base
+          self.table_name = "pies"
+
+          affairs_of_state :active, :inactive
+          affairs_of_state :moderated, :unmoderated
         end
-      }).to raise_error(ArgumentError, "Affairs of State: cannot be invoked multiple times on the same model")
+      }.to raise_error(ArgumentError)
+    end
+
+    it "raises if called twice with the same status in both" do
+      expect {
+        class Pie < ActiveRecord::Base
+          self.table_name = "pies"
+
+          affairs_of_state :active, :inactive
+          affairs_of_state :dormant, :active, column: :super_status
+        end
+      }.to raise_error(ArgumentError)
+    end
+
+    it "raises if statuses is called with no argument" do
+      expect {
+        Pie9.statuses
+      }.to raise_error(ArgumentError)
+    end
+
+    it "returns the statuses for the column" do
+      expect(Pie9.statuses(:status)).to eq(["active", "inactive"])
+      expect(Pie9.statuses("super_status")).to eq(["moderated", "unmoderated"])
+    end
+
+    it "raises if statuses_for_select is called with no argument" do
+      expect {
+        Pie9.statuses_for_select
+      }.to raise_error(ArgumentError)
+    end
+
+    it "returns the statuses_for_select for the column" do
+      expect(Pie9.statuses_for_select(:status)).to eq([["Active", "active"], ["Inactive", "inactive"]])
+      expect(Pie9.statuses_for_select("super_status")).to eq([["Moderated", "moderated"], ["Unmoderated", "unmoderated"]])
     end
   end
 end

@@ -60,7 +60,7 @@ or
 affairs_of_state :active, :inactive, if: :only_validate_if_this_method_returns_true
 ```
 
-Currently it is limited only be called once per model.
+It can be called multiple times per model, provided as each time is with a different column, and that none of the statuses overlap. If either of these are not true it will raise on load.
 
 
 ## Methods
@@ -72,10 +72,11 @@ widget = Widget.first
 widget.cancelled! if widget.active?
 ```
 
-You can also access all your statuses on the model like so:
+You can also access all your statuses on the model. If only one is defined it is default, otherwise the column name needs to be passed in:
 
 ```ruby
-Widget::STATUSES  # -> ["active", "cancelled"]
+Widget.statuses  # -> ["active", "cancelled"]
+Widget.statuses(:status)  # -> ["active", "cancelled"]
 ```
 
 It also provides scopes automagically:
@@ -85,10 +86,11 @@ Widget.active
 Widget.cancelled
 ```
 
-For select inputs in forms there is a convenience method that returns all states in the format expected by `options_for_select`
+For select inputs in forms there is a convenience method that returns all states in the format expected by `options_for_select`. Again if only one is defined on the model it returns as default, if multiple are defined the column name needs to be passed in:
 
 ```ruby
 <%= f.select :status, options_for_select(Widget.statuses_for_select) %>
+<%= f.select :status, options_for_select(Widget.statuses_for_select(:status)) %>
 ```
 
 
