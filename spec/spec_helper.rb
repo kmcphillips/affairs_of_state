@@ -21,4 +21,5 @@ ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS 'pies'")
 ActiveRecord::Base.connection.create_table(:pies) do |t|
   t.string :status
   t.string :super_status
+  t.string :sentiment
 end

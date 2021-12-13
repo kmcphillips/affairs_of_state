@@ -38,6 +38,12 @@ If you'd like to use another column, lets say `state`, pass it in as a configura
 affairs_of_state :active, :inactive, column: :state
 ```
 
+You can scope the helper and scope methods by a prefix:
+
+```ruby
+affairs_of_state :active, :inactive, prefix: :admin
+```
+
 You can also turn off validation:
 
 ```ruby
@@ -72,6 +78,12 @@ widget = Widget.first
 widget.cancelled! if widget.active?
 ```
 
+These methods are scoped by the prefix if one is set:
+```ruby
+widget = Widget.first
+widget.admin_cancelled! if widget.admin_active?
+```
+
 You can also access all your statuses on the model. If only one is defined it is default, otherwise the column name needs to be passed in:
 
 ```ruby
@@ -79,11 +91,15 @@ Widget.statuses  # -> ["active", "cancelled"]
 Widget.statuses(:status)  # -> ["active", "cancelled"]
 ```
 
-It also provides scopes automagically:
+It also provides scopes automagically, scoped by prefix if one is set:
 
 ```ruby
 Widget.active
 Widget.cancelled
+```
+```ruby
+Widget.admin_active
+Widget.admin_cancelled
 ```
 
 For select inputs in forms there is a convenience method that returns all states in the format expected by `options_for_select`. Again if only one is defined on the model it returns as default, if multiple are defined the column name needs to be passed in:

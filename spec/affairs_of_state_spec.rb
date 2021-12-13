@@ -215,7 +215,7 @@ describe AffairsOfState do
 
     it "raises if called twice on the same column" do
       expect {
-        class Pie < ActiveRecord::Base
+        class Pie10 < ActiveRecord::Base
           self.table_name = "pies"
 
           affairs_of_state :active, :inactive
@@ -226,11 +226,22 @@ describe AffairsOfState do
 
     it "raises if called twice with the same status in both" do
       expect {
-        class Pie < ActiveRecord::Base
+        class Pie11 < ActiveRecord::Base
           self.table_name = "pies"
 
           affairs_of_state :active, :inactive
           affairs_of_state :dormant, :active, column: :super_status
+        end
+      }.to raise_error(ArgumentError)
+    end
+
+    it "raises if collision between prefixes" do
+      expect {
+        class Pie12 < ActiveRecord::Base
+          self.table_name = "pies"
+
+          affairs_of_state :admin_active, :admin_inactive
+          affairs_of_state :dormant, :active, column: :super_status, prefix: :admin
         end
       }.to raise_error(ArgumentError)
     end
@@ -255,6 +266,38 @@ describe AffairsOfState do
     it "returns the statuses_for_select for the column" do
       expect(subject.statuses_for_select(:status)).to eq([["Active", "active"], ["Inactive", "inactive"]])
       expect(subject.statuses_for_select("super_status")).to eq([["Moderated", "moderated"], ["Unmoderated", "unmoderated"]])
+    end
+  end
+
+  describe "multiple invocations with prefix" do
+    class Pie13 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :active, :inactive
+      affairs_of_state :moderated, :unmoderated, column: :super_status
+      affairs_of_state :positive, :mixed, :negative, column: :sentiment, prefix: :sentiment
+    end
+
+    subject { Pie13 }
+
+    it "returns the statuses" do
+      expect(subject.statuses(:sentiment)).to eq([ "positive", "mixed", "negative" ])
+    end
+
+    it "adds the setter and getter methods with the prefix" do
+      p = subject.new
+      expect(p).to_not be_sentiment_positive
+      expect(p).to_not be_sentiment_mixed
+      expect(p).to_not be_sentiment_negative
+      p.sentiment_mixed!
+      expect(p).to be_sentiment_mixed
+    end
+
+    it "adds the scopes with the prefix" do
+      p = subject.create! sentiment: "positive", status: "active", super_status: "unmoderated"
+      subject.create! sentiment: "mixed", status: "active", super_status: "unmoderated"
+      subject.create! sentiment: "negative", status: "active", super_status: "unmoderated"
+      expect(subject.sentiment_positive).to eq([p])
     end
   end
 end
