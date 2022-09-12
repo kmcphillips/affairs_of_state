@@ -10,6 +10,7 @@ jobs:
         gemfile:
           - "activerecord-6.0.gemfile"
           - "activerecord-6.1.gemfile"
+          - "activerecord-7.0.gemfile"
           - "activerecord-latest.gemfile"
     runs-on: ubuntu-latest
     env:

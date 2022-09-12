@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 require "affairs_of_state"
 
-require "pry"
 require "sqlite3"
 
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run_when_matching :focus
+  # config.raise_errors_for_deprecations!
 end
 
 # Create an AR model to test with

@@ -191,7 +191,7 @@ describe AffairsOfState do
 
   describe "invalid status name" do
     it "should raise a good warning" do
-      expect(->{ class Pie8 < ActiveRecord::Base ; affairs_of_state :new ; end }).to raise_error(ArgumentError, "Affairs of State: 'new' is not a valid status")
+      expect{ class Pie8 < ActiveRecord::Base ; affairs_of_state :new ; end }.to raise_error(ArgumentError, "Affairs of State: 'new' is not a valid status")
     end
   end
 
