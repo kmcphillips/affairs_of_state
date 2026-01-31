@@ -300,4 +300,27 @@ describe AffairsOfState do
       expect(subject.sentiment_positive).to eq([p])
     end
   end
+
+  describe "with mixed prefix and column" do
+    class Pie14 < ActiveRecord::Base
+      self.table_name = "pies"
+
+      affairs_of_state :uploaded, :pending, :blank, column: :avatar_status, prefix: :avatar
+    end
+
+    subject { Pie14 }
+
+    it "adds the expected methods" do
+      p = subject.create! avatar_status: "uploaded"
+      expect(p).to be_avatar_uploaded
+      expect(p).to_not be_avatar_pending
+      expect(p).to_not be_avatar_blank
+      p.avatar_pending!
+      expect(p).to be_avatar_pending
+      expect(p).to_not be_avatar_uploaded
+      expect(p).to_not be_avatar_blank
+      p.avatar_blank!
+      expect(p).to be_avatar_blank
+    end
+  end
 end

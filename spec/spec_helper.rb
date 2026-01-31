@@ -22,4 +22,5 @@ ActiveRecord::Base.connection.create_table(:pies) do |t|
   t.string :status
   t.string :super_status
   t.string :sentiment
+  t.string :avatar_status
 end
