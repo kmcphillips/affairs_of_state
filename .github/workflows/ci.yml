@@ -16,6 +16,8 @@ jobs:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
     steps:
       - uses: actions/checkout@v2
+      - name: Remove Gemfile.lock
+        run: rm -vf Gemfile.lock
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.8
