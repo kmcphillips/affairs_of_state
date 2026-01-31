@@ -8,9 +8,8 @@ jobs:
       fail-fast: false
       matrix:
         gemfile:
-          - "activerecord-6.0.gemfile"
-          - "activerecord-6.1.gemfile"
-          - "activerecord-7.0.gemfile"
+          - "activerecord-8.0.gemfile"
+          - "activerecord-8.1.gemfile"
           - "activerecord-latest.gemfile"
     runs-on: ubuntu-latest
     env:
@@ -19,8 +18,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.2
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          ruby-version: 3.4.8
+          bundler-cache: true
       - name: Run tests
         run: |
           bundle exec rspec --format doc
