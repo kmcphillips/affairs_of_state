@@ -2,12 +2,18 @@
 require 'spec_helper'
 
 describe AffairsOfState do
-  describe "with a simple configuration" do
-    class Pie < ActiveRecord::Base
-      affairs_of_state :active, :inactive, :cancelled
-    end
+  def create_class(&block)
+    klass = Class.new(ActiveRecord::Base, &block)
+    klass.table_name = "pies"
+    klass
+  end
 
-    subject { Pie }
+  describe "with a simple configuration" do
+    subject do
+       create_class do
+        affairs_of_state :active, :inactive, :cancelled
+      end
+    end
 
     it "should validate the column is set" do
       expect(subject.new(status: nil)).to_not be_valid
@@ -68,13 +74,11 @@ describe AffairsOfState do
   end
 
   describe "with a non-standard column name" do
-    class Pie2 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :active, :inactive, column: :super_status
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive, column: :super_status
+      end
     end
-
-    subject { Pie2 }
 
     it "should validate the column is set" do
       expect(subject.new(status: nil, super_status: "active")).to be_valid
@@ -92,13 +96,11 @@ describe AffairsOfState do
   end
 
   describe "without validations" do
-    class Pie3 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :active, :inactive, allow_blank: true
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive, allow_blank: true
+      end
     end
-
-    subject { Pie3 }
 
     it "should validate the column is set" do
       expect(subject.new(status: nil)).to be_valid
@@ -106,13 +108,11 @@ describe AffairsOfState do
   end
 
   describe "with an array rather than *args" do
-    class Pie4 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state [:on, :off]
+    subject do
+      create_class do
+        affairs_of_state [:on, :off]
+      end
     end
-
-    subject { Pie4 }
 
     it "should work too if that's what floats your boat" do
       expect(subject.statuses).to eq(["on", "off"])
@@ -120,13 +120,11 @@ describe AffairsOfState do
   end
 
   describe "without the scopes" do
-    class Pie5 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :active, :inactive, scopes: false
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive, scopes: false
+      end
     end
-
-    subject { Pie5 }
 
     it "should not respond if the scopes are not needed" do
       expect(subject).to_not respond_to(:active)
@@ -134,15 +132,13 @@ describe AffairsOfState do
   end
 
   describe "with a conditional proc" do
-    class Pie6 < ActiveRecord::Base
-      self.table_name = "pies"
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive, if: lambda{|p| p.is_going_to_validate }
 
-      affairs_of_state :active, :inactive, if: lambda{|p| p.is_going_to_validate }
-
-      attr_accessor :is_going_to_validate
+        attr_accessor :is_going_to_validate
+      end
     end
-
-    subject { Pie6 }
 
     it "should enforce the validation if the :if param is true" do
       p = subject.new
@@ -160,19 +156,17 @@ describe AffairsOfState do
   end
 
   describe "with a conditional method name" do
-    class Pie7 < ActiveRecord::Base
-      self.table_name = "pies"
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive, if: :validation_method?
 
-      affairs_of_state :active, :inactive, if: :validation_method?
+        attr_accessor :is_going_to_validate
 
-      attr_accessor :is_going_to_validate
-
-      def validation_method?
-        self.is_going_to_validate
+        def validation_method?
+          self.is_going_to_validate
+        end
       end
     end
-
-    subject { Pie7 }
 
     it "should enforce the validation if the :if param is true" do
       p = subject.new
@@ -196,14 +190,12 @@ describe AffairsOfState do
   end
 
   describe "multiple invocations" do
-    class Pie9 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :active, :inactive
-      affairs_of_state :moderated, :unmoderated, column: :super_status
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive
+        affairs_of_state :moderated, :unmoderated, column: :super_status
+      end
     end
-
-    subject { Pie9 }
 
     it "declares two status columns" do
       p = subject.new
@@ -215,9 +207,7 @@ describe AffairsOfState do
 
     it "raises if called twice on the same column" do
       expect {
-        class Pie10 < ActiveRecord::Base
-          self.table_name = "pies"
-
+        create_class do
           affairs_of_state :active, :inactive
           affairs_of_state :moderated, :unmoderated
         end
@@ -226,9 +216,7 @@ describe AffairsOfState do
 
     it "raises if called twice with the same status in both" do
       expect {
-        class Pie11 < ActiveRecord::Base
-          self.table_name = "pies"
-
+        create_class do
           affairs_of_state :active, :inactive
           affairs_of_state :dormant, :active, column: :super_status
         end
@@ -237,9 +225,7 @@ describe AffairsOfState do
 
     it "raises if collision between prefixes" do
       expect {
-        class Pie12 < ActiveRecord::Base
-          self.table_name = "pies"
-
+        create_class do
           affairs_of_state :admin_active, :admin_inactive
           affairs_of_state :dormant, :active, column: :super_status, prefix: :admin
         end
@@ -270,15 +256,13 @@ describe AffairsOfState do
   end
 
   describe "multiple invocations with prefix" do
-    class Pie13 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :active, :inactive
-      affairs_of_state :moderated, :unmoderated, column: :super_status
-      affairs_of_state :positive, :mixed, :negative, column: :sentiment, prefix: :sentiment
+    subject do
+      create_class do
+        affairs_of_state :active, :inactive
+        affairs_of_state :moderated, :unmoderated, column: :super_status
+        affairs_of_state :positive, :mixed, :negative, column: :sentiment, prefix: :sentiment
+      end
     end
-
-    subject { Pie13 }
 
     it "returns the statuses" do
       expect(subject.statuses(:sentiment)).to eq([ "positive", "mixed", "negative" ])
@@ -302,13 +286,11 @@ describe AffairsOfState do
   end
 
   describe "with mixed prefix and column" do
-    class Pie14 < ActiveRecord::Base
-      self.table_name = "pies"
-
-      affairs_of_state :uploaded, :pending, :blank, column: :avatar_status, prefix: :avatar
+    subject do
+      create_class do
+        affairs_of_state :uploaded, :pending, :blank, column: :avatar_status, prefix: :avatar
+      end
     end
-
-    subject { Pie14 }
 
     it "adds the expected methods" do
       p = subject.create! avatar_status: "uploaded"
